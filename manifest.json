@@ -1,0 +1,14 @@
+{
+  "name": "Distribuidora do Batata — CRM Bebidas",
+  "short_name": "Batata CRM",
+  "description": "CRM completo para distribuidoras de bebidas: PDV, estoque, lotes/FEFO, rotas, fiscal e mais.",
+  "start_url": "distribuidora-batata-crm-1.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0e0c1a",
+  "theme_color": "#0e0c1a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

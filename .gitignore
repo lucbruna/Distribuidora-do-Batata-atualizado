@@ -1,0 +1,7 @@
+# Arquivos não essenciais / gerados
+banner.jpg
+_chrome-profile/
+_debug.mjs
+_test.mjs
+.DS_Store
+Thumbs.db
