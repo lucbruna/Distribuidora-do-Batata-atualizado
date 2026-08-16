@@ -550,9 +550,9 @@ tr:last-child td{border-bottom:none;}
       <div style="font-size:10px;color:#6b6b8a;display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px">
         <span>⌨️ <b style="color:#f59e0b">↑↓←→</b> navegar produtos</span>
         <span><b style="color:#f59e0b">Enter</b> adicionar</span>
-        <span><b style="color:#f59e0b">Tab</b> ir p/ carrinho/pagamento</span>
-        <span>Carrinho: <b style="color:#f59e0b">↑↓</b> selecionar · <b style="color:#f59e0b">+/−</b> qtd · <b style="color:#f59e0b">Del</b> remover · <b style="color:#f59e0b">→</b> pagamento</span>
-        <span>Pagamento: <b style="color:#f59e0b">←→</b> escolher · <b style="color:#f59e0b">F4</b> finalizar</span>
+        <span><b style="color:#f59e0b">→</b> vai p/ carrinho · <b style="color:#f59e0b">←</b> volta p/ produtos</span>
+        <span>Carrinho: <b style="color:#f59e0b">↑↓</b> selecionar · <b style="color:#f59e0b">+/−</b> qtd · <b style="color:#f59e0b">Del</b> remover</span>
+        <span>Pagamento: <b style="color:#f59e0b">←→</b> escolher · <b style="color:#f59e0b">→</b> finalizar · <b style="color:#f59e0b">F4</b> finaliza</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <input type="text" id="pdv-busca" placeholder="🔍 Buscar produto ou código de barras (Enter adiciona)" oninput="filtrarProds()" style="flex:1;background:#1e1b2e;border:1.5px solid #3d3a5c;border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:13px;outline:none;font-family:inherit">
@@ -1883,6 +1883,20 @@ function navegarPagamento(key) {
   setPgto(pbs[pdvPgtoSel], pbs[pdvPgtoSel].textContent.trim());
   pbs[pdvPgtoSel].focus();
 }
+function navegarProdutos(key) {
+  const irCarrinho = () => { const pi=document.querySelector('#cart-items .pi'); if(pi)pi.focus(); else { const pb=document.querySelector('.cart-pgto .pb'); if(pb)pb.focus(); } };
+  if (!pdvLista.length) {
+    if (key === 'ArrowRight' || key === 'ArrowDown') irCarrinho();
+    return;
+  }
+  const grid = $('pdv-prods-grid');
+  const cols = grid ? Math.max(1, Math.floor((grid.clientWidth + 9) / 139)) : 4;
+  const last = pdvLista.length - 1;
+  const atRightEdge = (pdvSel % cols) === (cols - 1);
+  const atBottom = (pdvSel + cols) > last;
+  if ((key === 'ArrowRight' && (atRightEdge || pdvSel === last)) || (key === 'ArrowDown' && (atBottom || pdvSel === last))) { irCarrinho(); return; }
+  moverSel(key);
+}
 
 // ═══════════════════════════════════════
 // PDV — TECLADO (setas ↑↓←→ + Enter + F4)
@@ -1915,7 +1929,7 @@ document.addEventListener('keydown', (e) => {
     if (setas.includes(e.key)) {
       e.preventDefault();
       if (ehClicavel && zona === 'produtos') return; // botões fora do grid: comportamento padrão
-      if (zona === 'produtos') { if (!(buscaFocado && temTexto)) moverSel(e.key); }
+      if (zona === 'produtos') { if (!(buscaFocado && temTexto)) navegarProdutos(e.key); }
       else if (zona === 'carrinho') {
         if (e.key === 'ArrowRight') { const pb=document.querySelector('.cart-pgto .pb'); if(pb)pb.focus(); }
         else if (e.key === 'ArrowLeft') { const b=$('pdv-busca'); if(b)b.focus(); pdvCartSel=-1; atualizarDestaquePDV(); }
