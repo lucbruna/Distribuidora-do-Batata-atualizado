@@ -1941,7 +1941,7 @@ document.addEventListener('keydown', (e) => {
       }
       else if (zona === 'pagamento') {
         if (e.key === 'ArrowLeft') { const pi=document.querySelector('#cart-items .pi'); if(pi)pi.focus(); else { const b=$('pdv-busca'); if(b)b.focus(); } }
-        else if (e.key === 'ArrowRight') { if(fin)fin.focus(); }
+        else if (e.key === 'ArrowRight') { const rec=$('recebido'); if (rec && S.pgtoAtual.includes('Dinheiro') && rec.offsetParent !== null) rec.focus(); else if(fin)fin.focus(); }
         else if (e.key === 'ArrowDown') { const rec=$('recebido'); if (rec && S.pgtoAtual.includes('Dinheiro') && rec.offsetParent !== null) rec.focus(); else navegarPagamento(e.key); }
         else if (e.key === 'ArrowUp') { navegarPagamento(e.key); }
       }
@@ -2132,7 +2132,7 @@ function setPgto(btn, label) {
   const t1=$('troco-area'), t2=$('lat-troco-area');
   if (t1) t1.style.display = ehDinheiro ? 'block' : 'none';
   if (t2) t2.style.display = ehDinheiro ? 'block' : 'none';
-  if (ehDinheiro) calcTroco();
+  if (ehDinheiro) { calcTroco(); const r=$('recebido'); if(r) setTimeout(()=>r.focus(), 0); }
   T(`Pagamento: ${label}`,'ok');
 }
 function recebidoRapido(v) {
