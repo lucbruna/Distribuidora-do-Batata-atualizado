@@ -421,6 +421,8 @@ tr:last-child td{border-bottom:none;}
     <div class="ni" data-v="produtos" onclick="openView('produtos',this)"><span class="ic">🍺</span>Produtos</div>
     <div class="ni" data-v="estoque" onclick="openView('estoque',this)"><span class="ic">📦</span>Estoque</div>
     <div class="ni" data-v="lotes" onclick="openView('lotes',this)"><span class="ic">🧊</span>Lotes / Validade</div>
+    <div class="ni" data-v="consign" onclick="openView('consign',this)"><span class="ic">📦</span>Consignação</div>
+    <div class="ni" data-v="comandas" onclick="openView('comandas',this)"><span class="ic">🍽️</span>Comandas</div>
     <div class="ni" data-v="tabelas" onclick="openView('tabelas',this)"><span class="ic">🏷️</span>Tabelas Preço</div>
     <div class="ni" data-v="comissao" onclick="openView('comissao',this)"><span class="ic">💸</span>Comissão</div>
     <div class="ni" data-v="abc" onclick="openView('abc',this)"><span class="ic">📊</span>Curva ABC</div>
@@ -487,41 +489,13 @@ tr:last-child td{border-bottom:none;}
       <div class="mid">
         <!-- GRÁFICO -->
         <div class="card">
-          <div class="card-tit">Vendas (7 dias)
+          <div class="card-tit">Vendas (30 dias)
             <div class="card-tit-r">
               <span><span class="dot" style="background:#f59e0b"></span>Varejo</span>
               <span><span class="dot" style="background:#3b82f6"></span>Atacado</span>
             </div>
           </div>
-          <div class="chart-box">
-            <div class="chy"><span>R$5k</span><span>R$3k</span><span>R$2k</span><span>R$2k</span><span>R$1k</span><span>R$0</span></div>
-            <div class="charea">
-              <svg class="chsvg" viewBox="0 0 300 148" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="gy" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f59e0b" stop-opacity=".3"/><stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/></linearGradient>
-                  <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6" stop-opacity=".22"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient>
-                </defs>
-                <line x1="0" y1="0"   x2="300" y2="0"   stroke="#2d2b45" stroke-width=".8"/>
-                <line x1="0" y1="29"  x2="300" y2="29"  stroke="#2d2b45" stroke-width=".8"/>
-                <line x1="0" y1="58"  x2="300" y2="58"  stroke="#2d2b45" stroke-width=".8"/>
-                <line x1="0" y1="88"  x2="300" y2="88"  stroke="#2d2b45" stroke-width=".8"/>
-                <line x1="0" y1="117" x2="300" y2="117" stroke="#2d2b45" stroke-width=".8"/>
-                <path d="M0,145 L43,136 L86,124 L129,108 L172,86 L215,60 L258,34 L300,6 L300,148 L0,148Z" fill="url(#gy)"/>
-                <polyline points="0,145 43,136 86,124 129,108 172,86 215,60 258,34 300,6" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-                <circle cx="0"   cy="145" r="3.5" fill="#f59e0b"/><circle cx="43"  cy="136" r="3.5" fill="#f59e0b"/>
-                <circle cx="86"  cy="124" r="3.5" fill="#f59e0b"/><circle cx="129" cy="108" r="3.5" fill="#f59e0b"/>
-                <circle cx="172" cy="86"  r="3.5" fill="#f59e0b"/><circle cx="215" cy="60"  r="3.5" fill="#f59e0b"/>
-                <circle cx="258" cy="34"  r="3.5" fill="#f59e0b"/><circle cx="300" cy="6"   r="3.5" fill="#f59e0b"/>
-                <path d="M0,148 L43,143 L86,133 L129,121 L172,105 L215,86 L258,64 L300,48 L300,148 L0,148Z" fill="url(#ga)"/>
-                <polyline points="0,148 43,143 86,133 129,121 172,105 215,86 258,64 300,48" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-                <circle cx="0"   cy="148" r="3.5" fill="#3b82f6"/><circle cx="43"  cy="143" r="3.5" fill="#3b82f6"/>
-                <circle cx="86"  cy="133" r="3.5" fill="#3b82f6"/><circle cx="129" cy="121" r="3.5" fill="#3b82f6"/>
-                <circle cx="172" cy="105" r="3.5" fill="#3b82f6"/><circle cx="215" cy="86"  r="3.5" fill="#3b82f6"/>
-                <circle cx="258" cy="64"  r="3.5" fill="#3b82f6"/><circle cx="300" cy="48"  r="3.5" fill="#3b82f6"/>
-              </svg>
-            </div>
-            <div class="chx"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div>
-          </div>
+            <canvas id="vendas-chart" height="150" style="width:100%;display:block"></canvas>
         </div>
         <!-- TOP VENDIDOS -->
         <div class="card">
@@ -543,6 +517,10 @@ tr:last-child td{border-bottom:none;}
         <div class="card">
           <div class="card-tit">Alertas de Estoque <button class="vbtn" onclick="openView('estoque',null)">Ver Todos</button></div>
           <div id="alertas-estoque"></div>
+        </div>
+        <div class="card">
+          <div class="card-tit">🔔 Avisos <span id="avisos-badge" class="badge bg-r" style="display:none"></span></div>
+          <div id="painel-avisos"></div>
         </div>
       </div>
     </div>
@@ -969,10 +947,45 @@ tr:last-child td{border-bottom:none;}
 <!-- Área de impressão A4 (invisível na tela) -->
 <div id="print-area"></div>
 
+<!-- ██ VIEW: COMANDAS ██ -->
+<div class="view" id="view-comandas">
+  <div style="padding:14px">
+    <div class="page-hd">
+      <div><div class="page-tit">🍽️ Comandas / Mesas</div><div class="page-sub">Controle de comandas de bar — abra uma mesa e registre os consumos</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-y" onclick="addMesa()">+ Mesa</button></div>
+    </div>
+    <div id="mesas-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px"></div>
+    <div id="empty-mesas" class="empty-cart" style="padding:30px"><div class="ec-em">🍽️</div><p>Nenhuma mesa aberta.</p></div>
+    <div class="card" style="margin-top:14px">
+      <div class="card-tit">📜 Histórico de Comandas Fechadas</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Mesa</th><th>Itens</th><th>Total</th><th>Fechamento</th><th>Pagamento</th></tr></thead><tbody id="tb-comandas"></tbody></table>
+      <div id="empty-comandas" class="empty-cart" style="padding:20px"><div class="ec-em">🧾</div><p>Nenhuma comanda fechada.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ██ VIEW: CONSIGNAÇÃO ██ -->
+<div class="view" id="view-consign">
+  <div style="padding:14px">
+    <div class="page-hd">
+      <div><div class="page-tit">📦 Consignação</div><div class="page-sub">Produtos deixados em bar/mercado — controle de estoque em consignado</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-y" onclick="openModal('m-consign')">+ Nova Consignação</button></div>
+    </div>
+    <div class="card">
+      <div class="card-tit">Consignações</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Cliente</th><th>Produto</th><th>Qtd</th><th>Preço Und.</th><th>Total</th><th>Data</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-consign"></tbody>
+      </table>
+      <div id="empty-consign" class="empty-cart" style="padding:24px"><div class="ec-em">📦</div><p>Nenhuma consignação ainda.</p></div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ██ VIEW: RELATÓRIOS ██ -->
 <div class="view" id="view-relatorios">
   <div style="padding:14px">
-    <div class="page-hd"><div class="page-tit">📄 Relatórios</div><button class="btn btn-b" onclick="exportCSV()">⬇️ Exportar CSV</button></div>
+    <div class="page-hd"><div class="page-tit">📄 Relatórios</div><div style="display:flex;gap:8px"><button class="btn btn-b" onclick="exportCSV()">⬇️ Exportar CSV</button><button class="btn btn-ghost" onclick="imprimirArea('rel-preview')">📄 Baixar PDF</button></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div style="display:flex;flex-direction:column;gap:8px">
         <div class="card" style="cursor:pointer;transition:border .14s" onclick="gerarRel('vendas')" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#2d2b45'"><div style="font-size:14px;font-weight:700">📊 Relatório de Vendas</div><div style="font-size:11px;color:#8888aa;margin-top:4px">Histórico completo de todas as vendas</div></div>
@@ -1188,11 +1201,12 @@ tr:last-child td{border-bottom:none;}
     <div class="fg"><label>Preço Varejo R$</label><input type="number" id="p-preco" placeholder="0,00" step="0.01" oninput="calcMarg()"></div>
     <div class="fg"><label>Preço Atacado R$</label><input type="number" id="p-atac" placeholder="0,00" step="0.01"></div>
     <div class="fg"><label>Margem %</label><input id="p-marg" readonly style="background:#12102a;opacity:.6"></div>
+    <div class="fg"><label>Margem Desejada %</label><input type="number" id="p-margalvo" placeholder="ex: 40" step="0.1" min="0"></div>
     <div class="fg"><label>Estoque Inicial</label><input type="number" id="p-estq" placeholder="0" min="0"></div>
     <div class="fg"><label>Estoque Mínimo</label><input type="number" id="p-min" placeholder="10" min="0"></div>
     <div class="fg"><label>Unidade</label><select id="p-un" style="background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:8px 10px;color:#e2e8f0;font-size:12.5px;outline:none;font-family:inherit"><option>un</option><option>cx</option><option>fardo</option><option>L</option></select></div>
   </div>
-  <div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('m-produto')">Cancelar</button><button class="btn btn-y" onclick="salvarProd()">✅ Salvar</button></div>
+  <div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('m-produto')">Cancelar</button><button class="btn btn-ghost" onclick="sugerirPreco()">💡 Sugerir</button><button class="btn btn-y" onclick="salvarProd()">✅ Salvar</button></div>
 </div></div>
 
 <div class="modal-bg" id="m-cliente"><div class="modal">
@@ -1328,10 +1342,36 @@ tr:last-child td{border-bottom:none;}
   <div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('m-pix')">Fechar</button></div>
 </div></div>
 
+<div class="modal-bg" id="m-comanda"><div class="modal modal-sm">
+  <div class="modal-hd"><h2 id="m-comanda-tit">🍽️ Comanda</h2><button class="modal-x" onclick="closeModal('m-comanda')">✕</button></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;gap:8px">
+      <select id="cm-prod" style="flex:1;background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:8px 10px;color:#e2e8f0;font-size:12.5px;outline:none;font-family:inherit"></select>
+      <input type="number" id="cm-qtd" value="1" min="1" style="width:60px;background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:8px;color:#e2e8f0;font-size:12.5px;outline:none;font-family:inherit">
+      <button class="btn btn-y btn-sm" onclick="addItemMesa()">+</button>
+    </div>
+    <div id="cm-itens" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"></div>
+    <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px"><span>Total</span><span id="cm-total">R$ 0,00</span></div>
+    <div class="fg"><label>Forma de Pagamento</label><select id="cm-pgto" style="background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:8px 10px;color:#e2e8f0;font-size:12.5px;outline:none;font-family:inherit"><option>💵 Dinheiro</option><option>💳 Cartão</option><option>📱 Pix</option><option>📝 Fiado</option></select></div>
+  </div>
+  <div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('m-comanda')">Cancelar</button><button class="btn btn-g" onclick="fecharMesa()">✅ Fechar Comanda</button></div>
+</div></div>
+
+<div class="modal-bg" id="m-consign"><div class="modal modal-sm">
+  <div class="modal-hd"><h2>📦 Nova Consignação</h2><button class="modal-x" onclick="closeModal('m-consign')">✕</button></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="fg"><label>Cliente *</label><select id="cs-cli" style="background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:8px 10px;color:#e2e8f0;font-size:12.5px;outline:none;font-family:inherit"></select></div>
+    <div class="fg"><label>Produto *</label><select id="cs-prod" style="background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:8px 10px;color:#e2e8f0;font-size:12.5px;outline:none;font-family:inherit"></select></div>
+    <div class="fg"><label>Quantidade *</label><input type="number" id="cs-qtd" min="1" placeholder="0"></div>
+    <div class="fg"><label>Preço Consignado R$ *</label><input type="number" id="cs-preco" step="0.01" placeholder="0,00"></div>
+  </div>
+  <div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('m-consign')">Cancelar</button><button class="btn btn-y" onclick="salvarConsign()">✅ Salvar</button></div>
+</div></div>
+
 <div class="modal-bg" id="m-cupom"><div class="modal modal-sm">
   <div class="modal-hd"><h2>🧾 Cupom de Venda</h2><button class="modal-x" onclick="closeModal('m-cupom')">✕</button></div>
   <div id="cupom-body" style="background:#fff;color:#000;border-radius:8px;padding:14px;font-family:monospace;font-size:12px;line-height:1.7"></div>
-  <div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('m-cupom')">Fechar</button><button class="btn btn-y" onclick="window.print()">🖨️ Imprimir</button></div>
+  <div class="modal-ft"><button class="btn btn-ghost" onclick="closeModal('m-cupom')">Fechar</button><button class="btn btn-y" onclick="imprimirArea('cupom-body')">📄 Baixar PDF</button></div>
 </div></div>
 
 <div class="toast" id="toast-el"></div>
@@ -1374,7 +1414,8 @@ const S = {
   recorrentes: [], recContas: [],
   nfs: [], nfSeq: 1,
   notas: [],
-  cfg: { nome:'', cnpj:'', wa:'', end:'', cid:'', pix:'', comissaoPct:5, nfSerie:'1', nfAmb:'2' }
+  cfg: { nome:'', cnpj:'', wa:'', end:'', cid:'', pix:'', comissaoPct:5, nfSerie:'1', nfAmb:'2' },
+  consignacoes: [], comandas: [], mesas: []
 };
 
 // ═══════════════════════════════════════
@@ -1416,6 +1457,7 @@ function openView(id, navEl) {
     financeiro: renderFin, contas: renderContas, config: renderConfig,
     caixa: renderCaixa, whatsapp: renderWhatsApp, entregas: renderEntregas, motorista: renderMotorista, fiscal: renderFiscal, recorrentes: renderRecorrentes,
     promocoes: renderPromos, usuarios: renderUsuarios, cartazes: renderCartazes,
+    consign: renderConsign, comandas: renderMesas,
     relatorios: () => {}
   };
   if (renders[id]) renders[id]();
@@ -1483,6 +1525,11 @@ function openModal(id, extra) {
     const s = $('lt-prod');
     if (s) s.innerHTML = S.prods.map((p,i)=>`<option value="${i}">${esc(p.nome)}</option>`).join('');
   }
+  if (id === 'm-consign') {
+    const sc = $('cs-cli'), sp = $('cs-prod');
+    if (sc) sc.innerHTML = S.clientes.map((c,i)=>`<option value="${i}">${esc(c.nome)}</option>`).join('');
+    if (sp) sp.innerHTML = S.prods.map((p,i)=>`<option value="${i}">${esc(p.emoji)} ${esc(p.nome)}</option>`).join('');
+  }
   if (id === 'm-recorrente') {
     const s = $('rec-cli');
     if (s) s.innerHTML = S.clientes.map((c,i)=>`<option value="${i}">${esc(c.nome)}</option>`).join('');
@@ -1511,6 +1558,17 @@ function populateCatSel(id) {
 function calcMarg() {
   const c = parseFloat($('p-custo').value)||0, v = parseFloat($('p-preco').value)||0;
   $('p-marg').value = (c && v) ? (((v-c)/v)*100).toFixed(1)+'%' : '';
+}
+function sugerirPreco() {
+  const custo = parseFloat($('p-custo').value)||0;
+  const marg = parseFloat($('p-margalvo').value);
+  if (!custo) return T('⚠️ Informe o Preço Custo primeiro!','warn');
+  if (isNaN(marg)) return T('⚠️ Informe a Margem Desejada %!','warn');
+  const preco = Math.round(custo*(1+marg/100)*100)/100;
+  if ($('p-preco')) $('p-preco').value = preco.toFixed(2);
+  if ($('p-atac')) $('p-atac').value = (Math.round(preco*0.85*100)/100).toFixed(2);
+  calcMarg();
+  T('💡 Preço sugerido: '+fR(preco),'ok');
 }
 
 function salvarProd() {
@@ -2255,6 +2313,146 @@ function adicionarLote() {
   ['lt-qtd','lt-val','lt-custo'].forEach(id => { const el=$(id); if(el) el.value=''; });
   renderLotes(); renderEstoque(); renderProdsAdmin(); renderPDVView(); atualizarBadges();
   T('✅ Lote adicionado!','ok'); guardar();
+}
+// ═══════════════════════════════════════
+// CONSIGNAÇÃO
+// ═══════════════════════════════════════
+function renderConsign() {
+  const tb = $('tb-consign'), em = $('empty-consign');
+  if (!tb) return;
+  if (!S.consignacoes.length) { tb.innerHTML=''; if(em) em.style.display='block'; return; }
+  if (em) em.style.display='none';
+  const stCls = { 'ativa':'bg-b', 'baixada':'bg-g', 'devolvida':'bg-gray' };
+  tb.innerHTML = S.consignacoes.map((c,i)=>`<tr>
+    <td><strong>${esc(c.cli)}</strong></td>
+    <td>${esc(c.prod)}</td>
+    <td>${c.qtd} ${c.un||''}</td>
+    <td>${fR(c.preco)}</td>
+    <td>${fR(c.preco*c.qtd)}</td>
+    <td style="font-size:11px">${c.data}</td>
+    <td><span class="badge ${stCls[c.status]||'bg-gray'}">${esc(c.status)}</span></td>
+    <td style="display:flex;gap:4px">
+      ${c.status==='ativa'?`<button class="btn btn-g btn-sm" onclick="baixarConsign(${i})">Baixar</button><button class="btn btn-ghost btn-sm" style="color:#60a5fa" onclick="devolverConsign(${i})">Devolver</button>`:''}
+      <button class="btn btn-ghost btn-sm" style="color:#ef4444" onclick="delConsign(${i})">🗑</button>
+    </td></tr>`).join('');
+}
+function salvarConsign() {
+  const ci = parseInt($('cs-cli').value), pi = parseInt($('cs-prod').value);
+  const cli = S.clientes[ci], prod = S.prods[pi];
+  const qtd = parseInt($('cs-qtd').value)||0, preco = parseFloat($('cs-preco').value)||0;
+  if (!cli || !prod) return T('⚠️ Selecione cliente e produto!','warn');
+  if (qtd<=0 || !preco) return T('⚠️ Informe quantidade e preço!','warn');
+  if (prod.estoque < qtd) return T('⚠️ Estoque insuficiente ('+prod.estoque+' '+prod.un+')!','warn');
+  prod.estoque -= qtd;
+  S.consignacoes.unshift({ id:'#C'+String(S.consignacoes.length+1).padStart(3,'0'), cli:cli.nome, prod:prod.nome, un:prod.un, qtd, preco, data:hoje(), status:'ativa' });
+  closeModal('m-consign');
+  ['cs-qtd','cs-preco'].forEach(id=>{ if($(id)) $(id).value=''; });
+  renderConsign(); renderEstoque(); renderProdsAdmin(); renderPDVView(); atualizarBadges(); guardar();
+  T('✅ Consignação registrada!','ok');
+}
+function baixarConsign(i) {
+  const c = S.consignacoes[i]; if(!c || c.status!=='ativa') return;
+  c.status='baixada';
+  S.vendas.unshift({ id:'#V'+String(S.vendas.length+1).padStart(4,'0'), data:new Date().toISOString(), hora:new Date().toLocaleTimeString('pt-BR'), cliente:c.cli, pgto:'Consignado', modo:'varejo', total:c.preco*c.qtd, itens:[{nome:c.prod, emoji:'📦', qty:c.qtd, preco:c.preco}] });
+  S.totalVendas += c.preco*c.qtd;
+  renderConsign(); renderDash(); guardar();
+  T('✅ Consignação baixada (venda registrada)!','ok');
+}
+function devolverConsign(i) {
+  const c = S.consignacoes[i]; if(!c || c.status!=='ativa') return;
+  const pi = S.prods.findIndex(p=>p.nome===c.prod);
+  if (pi>=0) S.prods[pi].estoque += c.qtd;
+  c.status='devolvida';
+  renderConsign(); renderEstoque(); renderProdsAdmin(); renderPDVView(); atualizarBadges(); guardar();
+  T('↩️ Produtos devolvidos ao estoque!','ok');
+}
+function delConsign(i) {
+  const c = S.consignacoes[i]; if(!c) return;
+  if (c.status==='ativa') { const pi = S.prods.findIndex(p=>p.nome===c.prod); if (pi>=0) S.prods[pi].estoque += c.qtd; }
+  S.consignacoes.splice(i,1);
+  renderConsign(); renderEstoque(); renderProdsAdmin(); renderPDVView(); atualizarBadges(); guardar();
+  T('🗑 Consignação excluída!','ok');
+}
+// ═══════════════════════════════════════
+// COMANDAS / MESAS
+// ═══════════════════════════════════════
+let mesaAberta = null;
+function addMesa() {
+  const nome = 'Mesa ' + (S.mesas.length+1);
+  S.mesas.push({ id:'#M'+String(S.mesas.length+1).padStart(3,'0'), nome, itens:[], abertaEm:new Date().toISOString(), status:'aberta' });
+  guardar(); renderMesas();
+  abrirMesa(S.mesas.length-1);
+}
+function renderMesas() {
+  const g = $('mesas-grid'), em = $('empty-mesas');
+  if (!g) return;
+  if (!S.mesas.length) { g.innerHTML=''; if(em) em.style.display='block'; } else { if(em) em.style.display='none'; }
+  if (g) g.innerHTML = S.mesas.map((m,i)=>{
+    const tot = (m.itens||[]).reduce((s,x)=>s+x.qty*x.preco,0);
+    return `<div class="card" style="cursor:pointer" onclick="abrirMesa(${i})">
+      <div style="font-weight:800;font-size:15px">${esc(m.nome)}</div>
+      <div style="font-size:11px;color:#8888aa;margin:4px 0">${(m.itens||[]).length} item(ns)</div>
+      <div style="font-size:16px;font-weight:900;color:#22c55e">${fR(tot)}</div>
+      <button class="btn btn-ghost btn-sm" style="color:#ef4444;margin-top:6px" onclick="event.stopPropagation();delMesa(${i})">🗑 Excluir</button>
+    </div>`;
+  }).join('');
+  const tc = $('tb-comandas'), ec = $('empty-comandas');
+  if (tc) {
+    if (!S.comandas.length) { tc.innerHTML=''; if(ec) ec.style.display='block'; } else { if(ec) ec.style.display='none'; }
+    tc.innerHTML = S.comandas.map(c=>`<tr><td><strong>${esc(c.mesa)}</strong></td><td>${c.itens.length} item(ns)</td><td>${fR(c.total)}</td><td style="font-size:11px">${c.fechaEm}</td><td>${esc(c.pgto)}</td></tr>`).join('');
+  }
+}
+function abrirMesa(i) {
+  const m = S.mesas[i]; if(!m) return;
+  mesaAberta = i;
+  if ($('m-comanda-tit')) $('m-comanda-tit').textContent = '🍽️ ' + m.nome;
+  const sp = $('cm-prod'); if (sp) sp.innerHTML = S.prods.map((p,j)=>`<option value="${j}">${esc(p.emoji)} ${esc(p.nome)} — ${fR(p.preco)}</option>`).join('');
+  renderCmItens();
+  openModal('m-comanda');
+}
+function addItemMesa() {
+  if (mesaAberta===null) return;
+  const pi = parseInt($('cm-prod').value), qty = parseInt($('cm-qtd').value)||1;
+  const p = S.prods[pi]; if(!p) return;
+  const m = S.mesas[mesaAberta];
+  const ex = m.itens.find(x=>x.prod===p.nome);
+  if (ex) ex.qty += qty; else m.itens.push({ prod:p.nome, emoji:p.emoji, qty, preco:p.preco });
+  renderCmItens(); renderMesas(); guardar();
+}
+function renderCmItens() {
+  const el = $('cm-itens'); if(!el || mesaAberta===null) return;
+  const m = S.mesas[mesaAberta];
+  el.innerHTML = (m.itens||[]).map((x,idx)=>`<div style="display:flex;justify-content:space-between;align-items:center;background:#12102a;border:1px solid #3d3a5c;border-radius:7px;padding:7px 10px">
+    <span>${x.emoji} ${esc(x.prod)} <span style="color:#8888aa;font-size:11px">x${x.qty}</span></span>
+    <span style="display:flex;gap:6px;align-items:center"><b>${fR(x.qty*x.preco)}</b><button class="btn btn-ghost btn-sm" style="color:#ef4444" onclick="rmItemMesa(${idx})">✕</button></span>
+  </div>`).join('');
+  const tot = (m.itens||[]).reduce((s,x)=>s+x.qty*x.preco,0);
+  if ($('cm-total')) $('cm-total').textContent = fR(tot);
+}
+function rmItemMesa(idx) {
+  if (mesaAberta===null) return;
+  S.mesas[mesaAberta].itens.splice(idx,1);
+  renderCmItens(); renderMesas(); guardar();
+}
+function fecharMesa() {
+  if (mesaAberta===null) return;
+  const m = S.mesas[mesaAberta];
+  if (!m.itens.length) return T('⚠️ Comanda vazia!','warn');
+  const total = m.itens.reduce((s,x)=>s+x.qty*x.preco,0);
+  const pgto = $('cm-pgto')?$('cm-pgto').value:'💵 Dinheiro';
+  S.vendas.unshift({ id:'#V'+String(S.vendas.length+1).padStart(4,'0'), data:new Date().toISOString(), hora:new Date().toLocaleTimeString('pt-BR'), cliente:m.nome, pgto, modo:'varejo', total, itens:m.itens.map(x=>({nome:x.prod, emoji:x.emoji, qty:x.qty, preco:x.preco})) });
+  S.totalVendas += total;
+  S.comandas.unshift({ id:'#K'+String(S.comandas.length+1).padStart(3,'0'), mesa:m.nome, itens:m.itens, total, pgto, fechaEm:new Date().toLocaleString('pt-BR') });
+  S.mesas.splice(mesaAberta,1);
+  mesaAberta = null;
+  closeModal('m-comanda'); renderMesas(); renderDash(); guardar();
+  T('✅ Comanda fechada!','ok');
+}
+function delMesa(i) {
+  const m = S.mesas[i]; if(!m) return;
+  S.mesas.splice(i,1); mesaAberta=null;
+  renderMesas(); guardar();
+  T('🗑 Mesa removida!','ok');
 }
 // Consome estoque dos lotes em FIFO (vence primeiro → sai primeiro; sem validade por último)
 function consumirLotes(pi, qty) {
@@ -3039,10 +3237,54 @@ function renderDash() {
   // WhatsApp do banner vindo da configuração
   const bw = $('banner-wa');
   if (bw) bw.textContent = (S.cfg&&S.cfg.wa) ? S.cfg.wa : '';
+  renderVendasChart(); renderAvisos();
 }
 function addToPDVIdx(i) {
   const p = S.prods[i]; if (!p) return;
   addToPDV(p.nome, p.emoji, p.preco);
+}
+function renderVendasChart() {
+  const cv = $('vendas-chart'); if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width = cv.clientWidth || 600, H = cv.height = 150;
+  ctx.clearRect(0,0,W,H);
+  const dias = 30, hoje0 = new Date(); hoje0.setHours(0,0,0,0);
+  const map = {};
+  for (let i=dias-1;i>=0;i--){ const d=new Date(hoje0); d.setDate(d.getDate()-i); map[d.toISOString().slice(0,10)]=0; }
+  S.vendas.forEach(v=>{ const k=(v.data||'').slice(0,10); if(k in map) map[k]+= (v.total||0); });
+  const vals = Object.values(map);
+  const max = Math.max(1, ...vals);
+  const n = vals.length, bw = W/n;
+  ctx.strokeStyle='#2d2b45'; ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){ const y=H*g/4; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  vals.forEach((val,i)=>{
+    const h = (val/max)*(H-12);
+    const x = i*bw+2, y = H-h;
+    ctx.fillStyle = val>0 ? '#f59e0b' : '#2d2b45';
+    ctx.fillRect(x, y, Math.max(1,bw-4), h);
+  });
+  if (!S.vendas.length){
+    ctx.fillStyle='#6b6b8a'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Sem vendas ainda', W/2, H/2);
+  }
+}
+function renderAvisos() {
+  const el = $('painel-avisos'); if (!el) return;
+  const hoje0 = new Date(); hoje0.setHours(0,0,0,0);
+  const ddias = (dt)=>{ if(!dt) return null; const d=new Date(dt+'T00:00:00'); if(isNaN(d)) return null; return Math.round((d-hoje0)/86400000); };
+  const contas = [];
+  (S.contas.pagar||[]).concat(S.contas.receber||[]).forEach(c=>{ const dd=ddias(c.data); if(dd!==null && dd>=0 && dd<=7) contas.push({t:c.desc||'Conta', v:c.val, d:dd}); });
+  const estq = S.prods.filter(p=>p.estoque<=p.min && p.min>0).map(p=>({t:p.nome, v:p.estoque, m:p.min}));
+  const loteV = [];
+  S.prods.forEach(p=>(Array.isArray(p.lotes)?p.lotes:[]).forEach(l=>{ const dd=ddias(l.validade); if(dd!==null && dd>=0 && dd<=30) loteV.push({t:p.nome, v:l.validade, d:dd}); }));
+  const total = contas.length + estq.length + loteV.length;
+  const badge = $('avisos-badge'); if (badge){ badge.style.display = total? 'inline-block':'none'; badge.textContent = total; }
+  if (!total){ el.innerHTML = '<div class="al-it"><span class="al-em">✅</span><span class="al-nm">Tudo sob controle!</span></div>'; return; }
+  let html='';
+  contas.forEach(c=> html+=`<div class="al-it"><span class="al-em">📅</span><span class="al-nm">${esc(c.t)}</span><span class="al-un">${fR(c.v)}</span><span class="${c.d<=2?'al-c blink':'al-b'}">${c.d===0?'Hoje':c.d+'d'}</span></div>`);
+  estq.forEach(p=> html+=`<div class="al-it"><span class="al-em">📦</span><span class="al-nm">${esc(p.t)}</span><span class="al-un">${p.v}/${p.m}</span><span class="al-b">Baixo</span></div>`);
+  loteV.forEach(l=> html+=`<div class="al-it"><span class="al-em">🧊</span><span class="al-nm">${esc(l.t)}</span><span class="al-un">${l.v}</span><span class="${l.d<=7?'al-c blink':'al-b'}">${l.d} dias</span></div>`);
+  el.innerHTML = html;
 }
 
 // ═══════════════════════════════════════
@@ -3531,7 +3773,7 @@ const DB = {
 function guardar() { clearTimeout(DB._t); DB._t = setTimeout(() => DB.save(), 600); autoBackup(); }
 function validarEstado(o){
   if(!o || typeof o!=='object') return false;
-  const arr=['prods','clientes','vendas','pedidos','fornecedores','entregas','promos','usuarios','caixaMov','caixaHist','msgLog'];
+  const arr=['prods','clientes','vendas','pedidos','fornecedores','entregas','promos','usuarios','caixaMov','caixaHist','msgLog','consignacoes','comandas','mesas'];
   for(const k of arr){ if(k in o && !Array.isArray(o[k])) return false; }
   if('contas' in o && (typeof o.contas!=='object' || !o.contas)) return false;
   if('caixa' in o && (typeof o.caixa!=='object' || !o.caixa)) return false;
@@ -3540,7 +3782,7 @@ function validarEstado(o){
 }
 function hidratarEstado(saved) {
   if (!saved || typeof saved !== 'object') return;
-  ['prods','clientes','vendas','pedidos','fornecedores','cats','entregas','promos','usuarios','caixaMov','caixaHist','msgLog','lotes','tabelas','recorrentes','recContas','nfs','notas'].forEach(k => {
+  ['prods','clientes','vendas','pedidos','fornecedores','cats','entregas','promos','usuarios','caixaMov','caixaHist','msgLog','lotes','tabelas','recorrentes','recContas','nfs','notas','consignacoes','comandas','mesas'].forEach(k => {
     if (Array.isArray(saved[k])) S[k] = saved[k];
   });
   if (saved.contas && typeof saved.contas === 'object') S.contas = Object.assign({pagar:[],receber:[]}, saved.contas);
@@ -3557,7 +3799,7 @@ function renderAll() {
   atualizarSelectCli(); atualizarKPIs(); renderProdsAdmin(); renderEstoque();
   renderPDVView(); renderClientes(); renderPedidos(); renderForn(); renderFin();
   renderContas(); renderConfig(); renderCaixa(); renderWhatsApp();
-  renderDash(); renderEntregas(); renderPromos(); renderUsuarios(); renderLotes();
+  renderDash(); renderEntregas(); renderPromos(); renderUsuarios(); renderLotes(); renderConsign(); renderMesas();
 }
 function exportarBackup() {
   const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
@@ -3567,6 +3809,12 @@ function exportarBackup() {
   a.click();
   URL.revokeObjectURL(a.href);
   T('✅ Backup exportado com sucesso!','ok');
+}
+function imprimirArea(id) {
+  const src = $(id); if (!src) return T('⚠️ Nada para imprimir!','warn');
+  const pa = $('print-area'); if (!pa) { window.print(); return; }
+  pa.innerHTML = src.innerHTML;
+  window.print();
 }
 function importarBackup(ev) {
   const f = ev.target.files && ev.target.files[0];
