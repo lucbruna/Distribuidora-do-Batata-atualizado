@@ -1197,6 +1197,7 @@ tr:last-child td{border-bottom:none;}
     <div class="fg full"><label>Código de Barras</label><input id="p-codigo" placeholder="Digite ou leia o código de barras (ex: 7891234567890)"></div>
     <div class="fg"><label>Categoria</label><select id="p-cat" style="background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:8px 10px;color:#e2e8f0;font-size:12.5px;outline:none;font-family:inherit"></select></div>
     <div class="fg"><label>Emoji</label><input id="p-emoji" placeholder="🍺" maxlength="2" style="font-size:20px"></div>
+    <div class="fg full"><label>Imagem do Produto</label><input type="file" id="p-img-file" accept="image/*" onchange="lerImgProd(this)" style="background:#12102a;border:1.5px solid #3d3a5c;border-radius:7px;padding:6px;color:#e2e8f0;font-size:12px;outline:none;font-family:inherit"><div id="p-img-prev" style="margin-top:6px"></div></div>
     <div class="fg"><label>Preço Custo R$</label><input type="number" id="p-custo" placeholder="0,00" step="0.01" oninput="calcMarg()"></div>
     <div class="fg"><label>Preço Varejo R$</label><input type="number" id="p-preco" placeholder="0,00" step="0.01" oninput="calcMarg()"></div>
     <div class="fg"><label>Preço Atacado R$</label><input type="number" id="p-atac" placeholder="0,00" step="0.01"></div>
@@ -1492,6 +1493,11 @@ function openModal(id, extra) {
       t.textContent = '🍺 Novo Produto';
       S.editIdx = null;
     }
+    if ($('p-img-prev')) $('p-img-prev').innerHTML = '';
+    prodImgTemp = null;
+    if (S.editIdx !== null && S.prods[S.editIdx] && S.prods[S.editIdx].img) {
+      const pv = $('p-img-prev'); if (pv) pv.innerHTML = `<img src="${S.prods[S.editIdx].img}" style="width:60px;height:60px;object-fit:cover;border-radius:8px">`;
+    }
   }
   if (id === 'm-cliente') {
     const t = $('m-cliente-tit');
@@ -1570,6 +1576,35 @@ function sugerirPreco() {
   calcMarg();
   T('💡 Preço sugerido: '+fR(preco),'ok');
 }
+const CAT_IMG = { 'Gelo':'produtos/gelo.png', 'Carvão':'produtos/carvao.png' };
+const CAT_CORES = { 'Cerveja':'#f59e0b','Refrigerante':'#ef4444','Água':'#3b82f6','Energético':'#a855f7','Suco':'#22c55e','Cachaça':'#f97316','Vinho':'#7c3aed','Espumante':'#ec4899','Gelo':'#06b6d4','Carvão':'#475569' };
+const CAT_EMOJI = { 'Cerveja':'🍺','Refrigerante':'🥤','Água':'💧','Energético':'⚡','Suco':'🧃','Cachaça':'🍶','Vinho':'🍷','Espumante':'🥂','Gelo':'🧊','Carvão':'🔥' };
+function catImg(cat, emoji){
+  const c = CAT_CORES[cat]||'#64748b';
+  const e = emoji || CAT_EMOJI[cat] || '📦';
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' rx='14' fill='${c}'/><text x='40' y='54' font-size='42' text-anchor='middle'>${e}</text></svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+function prodImg(p){ return (p && p.img) ? p.img : (CAT_IMG[(p&&p.cat)||''] || catImg((p&&p.cat)||'', (p&&p.emoji)||'')); }
+function imgTag(p, sz){ return `<img src="${prodImg(p)}" alt="${esc(p.nome)}" title="${esc(p.nome)}" style="width:${sz}px;height:${sz}px;border-radius:8px;object-fit:cover;vertical-align:middle" onerror="imgFallback(this,'${p.emoji}')">`; }
+function imgFallback(el, emoji){ el.outerHTML = '<span style="font-size:22px">'+emoji+'</span>'; }
+let prodImgTemp = null;
+function lerImgProd(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const max = 300, w = im.width, h = im.height, s = Math.min(1, max/Math.max(w,h));
+      const c = document.createElement('canvas'); c.width = Math.round(w*s); c.height = Math.round(h*s);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      prodImgTemp = c.toDataURL('image/jpeg',0.8);
+      const pv = $('p-img-prev'); if(pv) pv.innerHTML = `<img src="${prodImgTemp}" style="width:60px;height:60px;object-fit:cover;border-radius:8px">`;
+    };
+    im.src = rd.result;
+  };
+  rd.readAsDataURL(f);
+}
 
 function salvarProd() {
   const nome = ($('p-nome').value||'').trim();
@@ -1582,7 +1617,7 @@ function salvarProd() {
     atacado: parseFloat($('p-atac').value)||preco*0.85,
     estoque: parseInt($('p-estq').value)||0,
     min: parseInt($('p-min').value)||10,
-    un: $('p-un').value, status: 'Ativo'
+    un: $('p-un').value, img: prodImgTemp || (S.editIdx!==null ? (S.prods[S.editIdx].img||'') : ''), status: 'Ativo'
   };
   if (S.editIdx !== null && S.prods[S.editIdx]) {
     const alvo = S.prods[S.editIdx];
@@ -1600,7 +1635,8 @@ function salvarProd() {
     T('✅ Produto cadastrado!','ok');
   }
   closeModal('m-produto');
-  ['p-nome','p-codigo','p-emoji','p-custo','p-preco','p-atac','p-marg','p-estq','p-min'].forEach(id => { if($(id)) $(id).value=''; });
+  ['p-nome','p-codigo','p-emoji','p-custo','p-preco','p-atac','p-marg','p-estq','p-min','p-img-file'].forEach(id => { if($(id)) $(id).value=''; });
+  const pv = $('p-img-prev'); if(pv) pv.innerHTML=''; prodImgTemp = null;
   atualizarBadges(); renderProdsAdmin(); renderEstoque(); renderPDVView();
   guardar();
 }
@@ -1618,7 +1654,7 @@ function renderProdsAdmin() {
     const sc = p.estoque<=0?'bg-r':p.estoque<=p.min?'bg-y':'bg-g';
     const st = p.estoque<=0?'Esgotado':p.estoque<=p.min?'Baixo':'OK';
     return `<tr>
-      <td><strong>${p.emoji} ${esc(p.nome)}</strong>${p.codigo?`<br><span style="font-size:10px;color:#6b6b8a">🔢 ${esc(p.codigo)}</span>`:''}</td>
+      <td><strong>${imgTag(p,30)} ${esc(p.nome)}</strong>${p.codigo?`<br><span style="font-size:10px;color:#6b6b8a">🔢 ${esc(p.codigo)}</span>`:''}</td>
       <td><span class="badge bg-b">${esc(p.cat)}</span></td>
       <td>${fR(p.custo)}</td><td><strong>${fR(p.preco)}</strong></td>
       <td>${fR(p.atacado)}</td>
@@ -1777,7 +1813,7 @@ function filtrarProds() {
     const semEst = p.estoque <= 0;
     const sel = idx === pdvSel ? ' sel' : '';
     return `<div class="prod-card${semEst?' sem-est':''}${sel}" onclick="addCart(${i})">
-      <div class="pc-em">${p.emoji}</div>
+      <div class="pc-em">${imgTag(p,40)}</div>
       <div class="pc-nm">${esc(p.nome)}</div>
       <div class="pc-pr">${fR(pr)}</div>
       <div class="pc-st">${p.estoque} ${p.un} em estoque</div>
@@ -3227,7 +3263,7 @@ function renderDash() {
 
   // Produtos em destaque (primeiros 6)
   const dg = $('dest-grid');
-  if (dg) dg.innerHTML = S.prods.length ? S.prods.slice(0,6).map((p,i)=>`<div class="dc" onclick="addToPDVIdx(${i})"><div class="dc-em">${p.emoji}</div><div class="dc-nm">${esc(p.nome)}</div><div class="dc-pr">${fR(p.preco)}</div><div class="dc-bd">${p.estoque>0?'Em estoque':'Esgotado'}</div></div>`).join('') : '<div style="grid-column:1/-1;text-align:center;color:#6b6b8a;padding:16px">Nenhum produto cadastrado.<br><button class="vbtn" onclick="openView(\'produtos\',null)" style="margin-top:6px">+ Cadastrar Produto</button></div>';
+  if (dg) dg.innerHTML = S.prods.length ? S.prods.slice(0,6).map((p,i)=>`<div class="dc" onclick="addToPDVIdx(${i})"><div class="dc-em">${imgTag(p,40)}</div><div class="dc-nm">${esc(p.nome)}</div><div class="dc-pr">${fR(p.preco)}</div><div class="dc-bd">${p.estoque>0?'Em estoque':'Esgotado'}</div></div>`).join('') : '<div style="grid-column:1/-1;text-align:center;color:#6b6b8a;padding:16px">Nenhum produto cadastrado.<br><button class="vbtn" onclick="openView(\'produtos\',null)" style="margin-top:6px">+ Cadastrar Produto</button></div>';
 
   // Alertas de estoque
   const alertas = S.prods.filter(p=>p.estoque<=p.min).sort((a,b)=>a.estoque-b.estoque).slice(0,5);
