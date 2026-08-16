@@ -2138,6 +2138,7 @@ function finalizarVenda() {
   // Gerar cupom
   gerarCupom(venda);
   openModal('m-cupom');
+  imprimirArea('cupom-body'); // imprime o comprovante automaticamente ao finalizar
 
   // Limpar
   S.carrinho = [];
@@ -2551,7 +2552,8 @@ function montarPix(valor){
 }
 function renderPixQR(valor, containerId){
   const el = $(containerId); if(!el) return;
-  const pix = montarPix(valor);
+  let pix = null;
+  try { pix = montarPix(valor); } catch(e) { pix = null; }
   if(!pix){ el.innerHTML='<div style="color:#f59e0b;font-size:12px">⚠️ Cadastre sua chave PIX em ⚙️ Configurações.</div>'; return; }
   try{
     const qr = qrcode(0, 'M');
@@ -3848,9 +3850,9 @@ function exportarBackup() {
 }
 function imprimirArea(id) {
   const src = $(id); if (!src) return T('⚠️ Nada para imprimir!','warn');
-  const pa = $('print-area'); if (!pa) { window.print(); return; }
+  const pa = $('print-area'); if (!pa) { setTimeout(() => window.print(), 200); return; }
   pa.innerHTML = src.innerHTML;
-  window.print();
+  setTimeout(() => window.print(), 250);
 }
 function importarBackup(ev) {
   const f = ev.target.files && ev.target.files[0];
