@@ -1876,13 +1876,15 @@ function navegarCarrinho(key) {
   focoCarrinhoSel();
 }
 function navegarPagamento(key) {
-  const pbs = Array.from(document.querySelectorAll('.cart-pgto .pb')).filter(b => (b.getAttribute('onclick')||'').includes('setPgto'));
+  const pbs = Array.from(document.querySelectorAll('.cart-pgto .pb'));
   if (!pbs.length) return;
   if (pdvPgtoSel < 0 || pdvPgtoSel >= pbs.length) pdvPgtoSel = 0;
-  if (key === 'ArrowRight' || key === 'ArrowDown') pdvPgtoSel = Math.min(pbs.length-1, pdvPgtoSel+1);
-  else if (key === 'ArrowLeft' || key === 'ArrowUp') pdvPgtoSel = Math.max(0, pdvPgtoSel-1);
-  setPgto(pbs[pdvPgtoSel], pbs[pdvPgtoSel].textContent.trim());
-  pbs[pdvPgtoSel].focus();
+  if (key === 'ArrowRight' || key === 'ArrowDown') pdvPgtoSel = (pdvPgtoSel + 1) % pbs.length;
+  else if (key === 'ArrowLeft' || key === 'ArrowUp') pdvPgtoSel = (pdvPgtoSel - 1 + pbs.length) % pbs.length;
+  const btn = pbs[pdvPgtoSel];
+  const onclick = btn.getAttribute('onclick')||'';
+  if (onclick.includes('setPgto')) setPgto(btn, btn.textContent.trim(), false);
+  btn.focus();
 }
 function navegarProdutos(key) {
   const irCarrinho = () => { const pi=document.querySelector('#cart-items .pi'); if(pi)pi.focus(); else { const pb=document.querySelector('.cart-pgto .pb'); if(pb)pb.focus(); } };
@@ -1935,13 +1937,13 @@ document.addEventListener('keydown', (e) => {
       e.preventDefault();
       if (zona === 'produtos') { if (!(buscaFocado && temTexto)) navegarProdutos(e.key); }
       else if (zona === 'carrinho') {
-        if (e.key === 'ArrowRight') { const pb=document.querySelector('.cart-pgto .pb'); if(pb)pb.focus(); }
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { const pb=document.querySelector('.cart-pgto .pb'); if(pb)pb.focus(); }
         else if (e.key === 'ArrowLeft') { const b=$('pdv-busca'); if(b)b.focus(); pdvCartSel=-1; atualizarDestaquePDV(); }
         else navegarCarrinho(e.key);
       }
       else if (zona === 'pagamento') {
         if (e.key === 'ArrowLeft') { const pi=document.querySelector('#cart-items .pi'); if(pi)pi.focus(); else { const b=$('pdv-busca'); if(b)b.focus(); } }
-        else if (e.key === 'ArrowRight') { const rec=$('recebido'); if (rec && S.pgtoAtual.includes('Dinheiro') && rec.offsetParent !== null) rec.focus(); else if(fin)fin.focus(); }
+        else if (e.key === 'ArrowRight') { navegarPagamento(e.key); }
         else if (e.key === 'ArrowDown') { const rec=$('recebido'); if (rec && S.pgtoAtual.includes('Dinheiro') && rec.offsetParent !== null) rec.focus(); else navegarPagamento(e.key); }
         else if (e.key === 'ArrowUp') { navegarPagamento(e.key); }
       }
@@ -2122,7 +2124,8 @@ function addToPDV(nome, emoji, preco) {
 // ═══════════════════════════════════════
 // FORMA DE PAGAMENTO
 // ═══════════════════════════════════════
-function setPgto(btn, label) {
+function setPgto(btn, label, focarTroco) {
+  if (focarTroco === undefined) focarTroco = true;
   S.pgtoAtual = label;
   document.querySelectorAll('.pb').forEach(b => { b.style.outline=''; b.classList.remove('sel'); });
   btn.classList.add('sel');
@@ -2132,7 +2135,7 @@ function setPgto(btn, label) {
   const t1=$('troco-area'), t2=$('lat-troco-area');
   if (t1) t1.style.display = ehDinheiro ? 'block' : 'none';
   if (t2) t2.style.display = ehDinheiro ? 'block' : 'none';
-  if (ehDinheiro) { calcTroco(); const r=$('recebido'); if(r) setTimeout(()=>r.focus(), 0); }
+  if (ehDinheiro) { calcTroco(); if (focarTroco) { const r=$('recebido'); if(r) setTimeout(()=>r.focus(), 0); } }
   T(`Pagamento: ${label}`,'ok');
 }
 function recebidoRapido(v) {
