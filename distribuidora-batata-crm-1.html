@@ -1792,6 +1792,7 @@ function renderPDVView() {
   if (catsEl) catsEl.innerHTML = cats.map(c=>`<button class="cat-btn${c==='Todos'?' on':''}" onclick="filtCat(this,'${c}')">${c}</button>`).join('');
   filtrarProds();
   atualizarSelectCli();
+  const bFocus = $('pdv-busca'); if (bFocus) setTimeout(() => bFocus.focus(), 0);
 }
 
 let catAtiva = 'Todos';
@@ -1928,7 +1929,6 @@ document.addEventListener('keydown', (e) => {
     const zona = pdvZonaAtual();
     if (setas.includes(e.key)) {
       e.preventDefault();
-      if (ehClicavel && zona === 'produtos') return; // botões fora do grid: comportamento padrão
       if (zona === 'produtos') { if (!(buscaFocado && temTexto)) navegarProdutos(e.key); }
       else if (zona === 'carrinho') {
         if (e.key === 'ArrowRight') { const pb=document.querySelector('.cart-pgto .pb'); if(pb)pb.focus(); }
