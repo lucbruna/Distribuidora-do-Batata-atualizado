@@ -1951,9 +1951,9 @@ function recebidoRapido(v) {
   calcTroco();
 }
 function calcTroco() {
-  const totEl = $('c-tot') || $('lat-tot');
-  const tot = parseFloat((totEl?.textContent||'0').replace('R$ ','').replace(',','.'))||0;
   const usarFull = $('view-pdv') && $('view-pdv').classList.contains('on');
+  const totEl = usarFull ? $('c-tot') : $('lat-tot');
+  const tot = parseFloat((totEl?.textContent||'0').replace('R$ ','').replace(',','.'))||0;
   const recEl = usarFull ? $('recebido') : $('lat-recebido');
   if (!recEl) return;
   const rec = parseFloat(recEl.value)||0;
@@ -1969,7 +1969,7 @@ function calcTroco() {
 function finalizarVenda() {
   const usarFull = $('view-pdv') && $('view-pdv').classList.contains('on');
   // pega total (view pdv ou lateral)
-  const totEl = $('c-tot') || $('lat-tot');
+  const totEl = usarFull ? $('c-tot') : $('lat-tot');
   const totalStr = totEl?.textContent || 'R$ 0,00';
   const total = parseFloat(totalStr.replace('R$ ','').replace(',','.'))||0;
   // Desconto aplicado (já refletido no total exibido)
@@ -2328,7 +2328,8 @@ function renderPixQR(valor, containerId){
   }catch(e){ el.innerHTML='<div style="color:#ef4444;font-size:12px">Não foi possível gerar o QR.</div>'; }
 }
 function abrirPix(){
-  const totEl = $('c-tot') || $('lat-tot');
+  const usarFull = $('view-pdv') && $('view-pdv').classList.contains('on');
+  const totEl = usarFull ? $('c-tot') : $('lat-tot');
   const total = parseFloat((totEl?.textContent||'0').replace('R$ ','').replace(',','.'))||0;
   if(!total) return T('⚠️ Carrinho vazio!','warn');
   if(!S.cfg.pix) return T('⚠️ Cadastre sua chave PIX em ⚙️ Configurações!','warn');
@@ -2338,7 +2339,8 @@ function abrirPix(){
 }
 function copiarPix(valor){
   if(valor === undefined){
-    const totEl = $('c-tot') || $('lat-tot');
+    const usarFull = $('view-pdv') && $('view-pdv').classList.contains('on');
+    const totEl = usarFull ? $('c-tot') : $('lat-tot');
     valor = parseFloat((totEl?.textContent||'0').replace('R$ ','').replace(',','.'))||0;
   }
   const pix = montarPix(valor);
